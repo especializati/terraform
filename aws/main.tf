@@ -22,7 +22,7 @@ resource "aws_instance" "app_server" {
     Name = "Terraform-${count.index + 1}"
   }
 
-  vpc_security_group_ids = ["sg-0fd0e521dd3c7ff5e"]
+  vpc_security_group_ids = ["${aws_security_group.allow_ssh.id}"]
   key_name = "terraform-key"
 }
 
