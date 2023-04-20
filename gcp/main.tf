@@ -16,7 +16,7 @@ provider "google" {
 }
 
 resource "google_compute_instance" "app_example" {
-  count = 3
+  count = 1
   name = "terraform${count.index + 1}"
   machine_type = "e2-micro"
   zone = "us-central1-c"
@@ -39,10 +39,20 @@ resource "google_compute_instance" "app_example" {
   metadata = {
     ssh-keys = "carlos:${file("../ssh/terraform.pub")}"
   }
+
+  depends_on = [
+    google_storage_bucket.bucket-x
+  ]
 }
 
-resource "google_storage_bucket" "bucket" {
+resource "google_storage_bucket" "bucket-x" {
   name = "eti-bucket-project-x"
   location = "US"
   storage_class = "STANDARD"
+}
+
+resource "google_storage_bucket_object" "example_object" {
+  name = "example.log"
+  bucket = google_storage_bucket.bucket-x.name
+  source = "./test.log"
 }
