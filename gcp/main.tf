@@ -58,6 +58,21 @@ resource "google_compute_instance" "app_example" {
   depends_on = [
     google_storage_bucket.bucket-x
   ]
+
+  connection {
+    type = "ssh"
+    user = var.username
+    private_key = file("../ssh/terraform")
+    host = self.network_interface[count.index].access_config[count.index].nat_ip
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+      "sudo apt-get update",
+      "sudo apt-get install -y nginx",
+      "sudo service nginx start"
+    ]
+  }
 }
 
 resource "google_storage_bucket" "bucket-x" {
