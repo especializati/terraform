@@ -15,6 +15,21 @@ provider "google" {
   zone    = "us-central1-c"
 }
 
+variable "image" {
+  type = string
+  default = "debian-cloud/debian-10"
+}
+
+variable "tag" {
+  type = string
+  default = "terraform"
+}
+
+variable "username" {
+  type = string
+  default = "carlos"
+}
+
 resource "google_compute_instance" "app_example" {
   count = 1
   name = "terraform${count.index + 1}"
@@ -23,7 +38,7 @@ resource "google_compute_instance" "app_example" {
 
   boot_disk {
     initialize_params {
-      image = "debian-cloud/debian-10"
+      image = var.image
     }
   }
 
@@ -34,10 +49,10 @@ resource "google_compute_instance" "app_example" {
     }
   }
 
-  tags = ["terraform${count.index + 1}"]
+  tags = ["${var.tag}${count.index + 1}"]
 
   metadata = {
-    ssh-keys = "carlos:${file("../ssh/terraform.pub")}"
+    ssh-keys = "${var.username}:${file("../ssh/terraform.pub")}"
   }
 
   depends_on = [
