@@ -49,7 +49,7 @@ resource "google_compute_instance" "app_example" {
     }
   }
 
-  tags = ["${var.tag}${count.index + 1}"]
+  tags = ["${var.tag}${count.index + 1}", "http-server"]
 
   metadata = {
     ssh-keys = "${var.username}:${file("../ssh/terraform.pub")}"
@@ -85,4 +85,17 @@ resource "google_storage_bucket_object" "example_object" {
   name = "example.log"
   bucket = google_storage_bucket.bucket-x.name
   source = "./test.log"
+}
+
+resource "google_compute_firewall" "allow-http" {
+  name = "allow-http"
+  network = "default"
+
+  allow {
+    protocol = "tcp"
+    ports = ["80"]
+  }
+
+  source_ranges = ["0.0.0.0/0"]
+  target_tags = ["http-server"]
 }
