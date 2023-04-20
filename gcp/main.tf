@@ -15,21 +15,6 @@ provider "google" {
   zone    = "us-central1-c"
 }
 
-variable "image" {
-  type = string
-  default = "debian-cloud/debian-10"
-}
-
-variable "tag" {
-  type = string
-  default = "terraform"
-}
-
-variable "username" {
-  type = string
-  default = "carlos"
-}
-
 resource "google_compute_instance" "app_example" {
   count = 2
   name = "terraform${count.index + 1}"
@@ -75,34 +60,4 @@ resource "google_compute_instance" "app_example" {
   #     "sudo service nginx start"
   #   ]
   # }
-}
-
-resource "google_storage_bucket" "bucket-x" {
-  name = "eti-bucket-project-x"
-  location = "US"
-  storage_class = "STANDARD"
-}
-
-resource "google_storage_bucket_object" "example_object" {
-  name = "example.log"
-  bucket = google_storage_bucket.bucket-x.name
-  source = "./test.log"
-}
-
-resource "google_compute_firewall" "allow-http" {
-  name = "allow-http"
-  network = "default"
-
-  allow {
-    protocol = "tcp"
-    ports = ["80"]
-  }
-
-  source_ranges = ["0.0.0.0/0"]
-  target_tags = ["http-server"]
-}
-
-output "instances_ips" {
-  # value = google_compute_instance.app_example[0].network_interface[0].access_config[0].nat_ip
-  value = [for instance in google_compute_instance.app_example : instance.network_interface[0].access_config[0].nat_ip]
 }
