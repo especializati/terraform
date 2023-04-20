@@ -40,3 +40,9 @@ resource "google_compute_instance" "app_example" {
     ssh-keys = "carlos:${file("../ssh/terraform.pub")}"
   }
 }
+
+resource "google_storage_bucket" "bucket" {
+  name = "eti-bucket-project-x"
+  location = "US"
+  storage_class = "STANDARD"
+}
